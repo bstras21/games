@@ -264,6 +264,7 @@ function VocabMinus1() {
   const [wrongDefIndex, setWrongDefIndex] = useState(null)
   const [correctDefIndex, setCorrectDefIndex] = useState(null)
   const [reverseMode, setReverseMode] = useState(false)
+  const [tooltipData, setTooltipData] = useState(null) // { type: 'term' | 'definition', index: number, text: string }
 
   useEffect(() => {
     // Terms always alphabetically sorted, definitions sorted alphabetically in reverse mode, random in normal mode
@@ -389,10 +390,47 @@ function VocabMinus1() {
     setAttempts(0)
     setWrongDefIndex(null)
     setCorrectDefIndex(null)
+    setTooltipData(null)
   }
 
   const isTermMatched = (index) => matches.has(`term-${index}`)
   const isDefinitionMatched = (defIndex) => matches.has(`def-${defIndex}`)
+
+  // Find corresponding match for tooltip
+  const findCorrespondingMatch = (type, index) => {
+    let item
+    if (type === 'term') {
+      item = shuffledTerms[index]
+    } else {
+      item = shuffledDefinitions[index]
+    }
+    
+    // Find the matching pair in vocabularyData
+    const vocabItem = vocabularyData.find(v => v.term === item.term)
+    if (!vocabItem) return null
+    
+    if (type === 'term') {
+      // Find the definition index in shuffledDefinitions
+      const defIndex = shuffledDefinitions.findIndex(d => d.term === vocabItem.term)
+      if (defIndex === -1) return null
+      return { type: 'definition', index: defIndex, text: vocabItem.definition }
+    } else {
+      // Find the term index in shuffledTerms
+      const termIndex = shuffledTerms.findIndex(t => t.term === vocabItem.term)
+      if (termIndex === -1) return null
+      return { type: 'term', index: termIndex, text: vocabItem.term }
+    }
+  }
+
+  const handleMatchedItemClick = (type, index, event) => {
+    event.stopPropagation()
+    const corresponding = findCorrespondingMatch(type, index)
+    if (corresponding) {
+      setTooltipData(corresponding)
+      // Hide tooltip after 3 seconds
+      setTimeout(() => setTooltipData(null), 3000)
+    }
+  }
 
   const allMatched = matches.size === vocabularyData.length * 2
 
@@ -493,11 +531,11 @@ function VocabMinus1() {
                     return (
                       <button
                         key={index}
-                        onClick={() => handleDefinitionClick(index)}
-                        disabled={matched}
-                        className={`w-full py-2.5 px-4 rounded-lg border text-left transition-all duration-200 ${
+                        onClick={(e) => matched ? handleMatchedItemClick('definition', index, e) : handleDefinitionClick(index)}
+                        disabled={false}
+                        className={`w-full py-2.5 px-4 rounded-lg border text-left transition-all duration-200 relative ${
                           matched
-                            ? 'bg-gradient-to-r from-green-400 via-green-300 to-green-400 border-green-300 text-black cursor-not-allowed opacity-80 shadow-[0_0_20px_rgba(0,255,0,0.8),0_0_10px_rgba(0,255,0,0.6)]'
+                            ? 'bg-gradient-to-r from-green-400 via-green-300 to-green-400 border-green-300 text-black cursor-pointer opacity-80 shadow-[0_0_20px_rgba(0,255,0,0.8),0_0_10px_rgba(0,255,0,0.6)]'
                             : selected
                             ? 'bg-black/70 border border-neon-cyan text-white shadow-[0_0_15px_rgba(0,255,255,0.6)]'
                             : 'bg-black/50 border border-neon-cyan/50 text-gray-200 hover:bg-black/70 hover:border-neon-cyan active:bg-black/80'
@@ -518,11 +556,11 @@ function VocabMinus1() {
                     return (
                       <button
                         key={index}
-                        onClick={() => handleTermClick(index)}
-                        disabled={matched}
-                        className={`w-full py-2 px-4 rounded-xl text-center transition-all duration-200 font-semibold text-sm md:text-base ${
+                        onClick={(e) => matched ? handleMatchedItemClick('term', index, e) : handleTermClick(index)}
+                        disabled={false}
+                        className={`w-full py-2 px-4 rounded-xl text-center transition-all duration-200 font-semibold text-sm md:text-base relative ${
                           matched
-                            ? 'bg-gradient-to-r from-neon-cyan via-neon-cyan/80 to-neon-cyan/60 border border-neon-cyan text-black cursor-not-allowed opacity-80 shadow-[0_0_20px_rgba(0,255,255,0.8),0_0_10px_rgba(0,255,255,0.6)]'
+                            ? 'bg-gradient-to-r from-neon-cyan via-neon-cyan/80 to-neon-cyan/60 border border-neon-cyan text-black cursor-pointer opacity-80 shadow-[0_0_20px_rgba(0,255,255,0.8),0_0_10px_rgba(0,255,255,0.6)]'
                             : selected
                             ? 'bg-gradient-to-r from-neon-magenta via-neon-magenta to-neon-magenta/90 border border-neon-magenta text-white shadow-[0_0_30px_rgba(255,0,255,1),0_0_15px_rgba(255,0,255,0.8),inset_0_0_20px_rgba(255,0,255,0.3)]'
                             : 'bg-gradient-to-r from-neon-magenta/90 via-neon-magenta/70 to-neon-magenta/50 border border-neon-magenta text-white hover:from-neon-magenta hover:via-neon-magenta/95 hover:to-neon-magenta/80 hover:shadow-[0_0_25px_rgba(255,0,255,0.9),0_0_10px_rgba(255,0,255,0.6)] active:from-neon-magenta active:to-neon-magenta active:shadow-[0_0_35px_rgba(255,0,255,1),0_0_15px_rgba(255,0,255,0.8)]'
@@ -553,10 +591,10 @@ function VocabMinus1() {
           }}
         >
           <div 
-            className="bg-black/90 backdrop-blur-md rounded-none md:rounded-3xl p-4 md:p-6 border border-neon-cyan shadow-[0_0_30px_rgba(0,255,255,0.5)] w-full h-full md:max-w-2xl md:w-auto md:max-h-[80vh] md:h-auto overflow-y-auto"
+            className="bg-black/90 backdrop-blur-md rounded-none md:rounded-3xl border border-neon-cyan shadow-[0_0_30px_rgba(0,255,255,0.5)] w-full h-full md:max-w-2xl md:w-auto md:max-h-[80vh] md:h-auto flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between p-4 md:p-6 pb-4 sticky top-0 bg-black/90 backdrop-blur-md z-10 border-b border-neon-cyan/30">
               <h3 className="text-lg md:text-xl font-bold text-neon-magenta">
                 {reverseMode 
                   ? <>Select term for: <span className="text-white">{shuffledDefinitions[selectedDefinition]?.definition}</span></>
@@ -573,7 +611,8 @@ function VocabMinus1() {
                 <X size={24} />
               </button>
             </div>
-            <div className="space-y-2">
+            <div className="overflow-y-auto flex-1 px-4 md:px-6 pb-4 md:pb-6">
+              <div className="space-y-2">
               {reverseMode ? (
                 // Reverse mode: show terms in popup (definition style - black/cyan)
                 shuffledTerms.map((item, index) => {
@@ -633,6 +672,26 @@ function VocabMinus1() {
                   )
                 })
               )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tooltip for matched items */}
+      {tooltipData && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          onClick={() => setTooltipData(null)}
+        >
+          <div className="bg-black/90 backdrop-blur-md rounded-2xl p-6 border-2 border-neon-cyan shadow-[0_0_40px_rgba(0,255,255,0.8),0_0_20px_rgba(0,255,255,0.6)] max-w-md mx-4 animate-in fade-in zoom-in duration-300">
+            <div className="text-center">
+              <div className="text-neon-magenta font-bold text-lg mb-2">
+                {tooltipData.type === 'term' ? 'Term:' : 'Definition:'}
+              </div>
+              <div className="text-white text-base md:text-lg">
+                {tooltipData.text}
+              </div>
             </div>
           </div>
         </div>
