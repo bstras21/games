@@ -4,7 +4,7 @@ import VocabMinus1 from './pages/VocabMinus1'
 
 function App() {
   return (
-    <Router>
+    <Router basename="/games">
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/vocab-1" element={<VocabMinus1 />} />
