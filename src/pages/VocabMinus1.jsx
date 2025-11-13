@@ -254,7 +254,6 @@ const vocabularyData = [
 ]
 
 function VocabMinus1() {
-  const [selectedTerm, setSelectedTerm] = useState(null)
   const [selectedDefinition, setSelectedDefinition] = useState(null)
   const [matches, setMatches] = useState(new Set())
   const [shuffledTerms, setShuffledTerms] = useState([])
@@ -263,128 +262,57 @@ function VocabMinus1() {
   const [attempts, setAttempts] = useState(0)
   const [wrongDefIndex, setWrongDefIndex] = useState(null)
   const [correctDefIndex, setCorrectDefIndex] = useState(null)
-  const [reverseMode, setReverseMode] = useState(false)
   const [tooltipData, setTooltipData] = useState(null) // { type: 'term' | 'definition', index: number, text: string }
 
   useEffect(() => {
-    // Terms always alphabetically sorted, definitions sorted alphabetically in reverse mode, random in normal mode
+    // Terms always alphabetically sorted, definitions randomized
     const terms = [...vocabularyData].sort((a, b) => a.term.localeCompare(b.term))
-    const definitions = reverseMode 
-      ? [...vocabularyData].sort((a, b) => a.definition.localeCompare(b.definition))
-      : [...vocabularyData].sort(() => Math.random() - 0.5)
+    const definitions = [...vocabularyData].sort(() => Math.random() - 0.5)
     setShuffledTerms(terms)
     setShuffledDefinitions(definitions)
-  }, [reverseMode])
-
-  useEffect(() => {
-    // Shuffle items in popup whenever it opens
-    if (selectedTerm !== null || selectedDefinition !== null) {
-      if (reverseMode && selectedDefinition !== null) {
-        // In reverse mode, keep terms alphabetical in popup (don't shuffle)
-        // Terms are already sorted alphabetically
-      } else if (!reverseMode && selectedTerm !== null) {
-        // Normal mode, shuffle definitions for popup
-        const termIndex = selectedTerm
-        if (!matches.has(`term-${termIndex}`)) {
-          const definitions = [...vocabularyData].sort(() => Math.random() - 0.5)
-          setShuffledDefinitions(definitions)
-        }
-      }
-    }
-  }, [selectedTerm, selectedDefinition, matches, reverseMode])
-
-  const handleTermClick = (index) => {
-    if (matches.has(`term-${index}`)) return
-    
-    if (selectedTerm === index) {
-      setSelectedTerm(null)
-    } else {
-      setSelectedTerm(index)
-    }
-  }
+  }, [])
 
   const handleDefinitionClick = (index) => {
-    if (reverseMode) {
-      // In reverse mode, clicking definition opens popup with terms
-      if (matches.has(`def-${index}`)) return
-      if (selectedDefinition === index) {
-        setSelectedDefinition(null)
-      } else {
-        setSelectedDefinition(index)
-      }
+    // Clicking definition opens popup with terms
+    if (matches.has(`def-${index}`)) return
+    if (selectedDefinition === index) {
+      setSelectedDefinition(null)
     } else {
-      // Normal mode behavior
-      if (matches.has(`def-${index}`)) return
-      if (selectedDefinition === index) {
-        setSelectedDefinition(null)
-      } else {
-        setSelectedDefinition(index)
-        if (selectedTerm !== null) {
-          checkMatch(selectedTerm, index)
-        }
-      }
+      setSelectedDefinition(index)
     }
   }
 
-  const checkMatch = (termIndex, defIndex) => {
+  const checkMatch = (defIndex, termIndex) => {
     setAttempts(prev => prev + 1)
-    let term, definition
-    
-    if (reverseMode) {
-      // In reverse mode, termIndex is actually defIndex and defIndex is termIndex
-      definition = shuffledDefinitions[termIndex]
-      term = shuffledTerms[defIndex]
-    } else {
-      term = shuffledTerms[termIndex]
-      definition = shuffledDefinitions[defIndex]
-    }
+    // defIndex is the definition index, termIndex is the term index in popup
+    const definition = shuffledDefinitions[defIndex]
+    const term = shuffledTerms[termIndex]
     
     if (term.term === definition.term) {
       // Correct match!
-      if (reverseMode) {
-        setCorrectDefIndex(defIndex) // defIndex is the term index in popup
-        setTimeout(() => {
-          setMatches(prev => new Set([...prev, `def-${termIndex}`, `term-${defIndex}`]))
-          setScore(prev => prev + 1)
-          setSelectedDefinition(null)
-          setCorrectDefIndex(null)
-        }, 500)
-      } else {
-        setCorrectDefIndex(defIndex)
-        setTimeout(() => {
-          setMatches(prev => new Set([...prev, `term-${termIndex}`, `def-${defIndex}`]))
-          setScore(prev => prev + 1)
-          setSelectedTerm(null)
-          setSelectedDefinition(null)
-          setCorrectDefIndex(null)
-        }, 500)
-      }
+      setCorrectDefIndex(termIndex) // termIndex is the term index in popup
+      setTimeout(() => {
+        setMatches(prev => new Set([...prev, `def-${defIndex}`, `term-${termIndex}`]))
+        setScore(prev => prev + 1)
+        setSelectedDefinition(null)
+        setCorrectDefIndex(null)
+      }, 500)
     } else {
       // Wrong match - show red feedback
-      if (reverseMode) {
-        setWrongDefIndex(defIndex) // defIndex is the term index in popup
-        setTimeout(() => {
-          setWrongDefIndex(null)
-        }, 1500)
-      } else {
-        setWrongDefIndex(defIndex)
-        setTimeout(() => {
-          setWrongDefIndex(null)
-        }, 1500)
-      }
+      setWrongDefIndex(termIndex) // termIndex is the term index in popup
+      setTimeout(() => {
+        setWrongDefIndex(null)
+      }, 1500)
     }
   }
 
   const resetGame = () => {
-    // Terms always alphabetically sorted, definitions sorted alphabetically in reverse mode, random in normal mode
+    // Terms always alphabetically sorted, definitions randomized
     const terms = [...vocabularyData].sort((a, b) => a.term.localeCompare(b.term))
-    const definitions = reverseMode 
-      ? [...vocabularyData].sort((a, b) => a.definition.localeCompare(b.definition))
-      : [...vocabularyData].sort(() => Math.random() - 0.5)
+    const definitions = [...vocabularyData].sort(() => Math.random() - 0.5)
     setShuffledTerms(terms)
     setShuffledDefinitions(definitions)
     setMatches(new Set())
-    setSelectedTerm(null)
     setSelectedDefinition(null)
     setScore(0)
     setAttempts(0)
@@ -449,28 +377,6 @@ function VocabMinus1() {
             <h1 className="text-3xl md:text-5xl font-bold text-neon-magenta drop-shadow-[0_0_6px_rgba(255,0,255,0.4)]">
               Vocab
             </h1>
-            <button
-              onClick={() => {
-                setReverseMode(!reverseMode)
-                setSelectedTerm(null)
-                setSelectedDefinition(null)
-                setMatches(new Set())
-                setScore(0)
-                setAttempts(0)
-                setWrongDefIndex(null)
-                setCorrectDefIndex(null)
-              }}
-              className={`px-4 py-2 rounded-lg border transition-all duration-200 font-semibold text-sm md:text-base ${
-                reverseMode
-                  ? 'bg-gradient-to-r from-neon-cyan/90 via-neon-cyan/70 to-neon-cyan/50 border-neon-cyan text-white shadow-[0_0_15px_rgba(0,255,255,0.6)]'
-                  : 'bg-black/40 border-neon-cyan/50 text-neon-cyan hover:bg-neon-cyan/20'
-              }`}
-            >
-              <span className="flex items-center gap-2">
-                Definition-First
-                {reverseMode && <CheckCircle2 size={16} className="text-white" />}
-              </span>
-            </button>
           </div>
           <div className="flex items-center gap-4">
             <div className="text-sm md:text-base">
@@ -509,103 +415,62 @@ function VocabMinus1() {
         <main className="max-w-7xl mx-auto">
           <div className="mb-6 text-center">
             <p className="text-gray-300">
-              {reverseMode 
-                ? 'Click a definition and then its matching term'
-                : 'Click a term and then its matching definition'
-              }
+              Click a definition and then its matching term
             </p>
           </div>
           
           <div className="max-w-4xl mx-auto">
-            {/* Terms Column - or Definitions in reverse mode */}
+            {/* Definitions Column */}
             <div className="bg-black/40 backdrop-blur-md rounded-3xl p-4 md:p-6 border border-neon-magenta shadow-[0_0_20px_rgba(0,0,0,0.5)]">
               <h2 className="text-xl font-bold text-neon-magenta mb-4 text-center">
-                {reverseMode ? 'Definitions' : 'Terms'}
+                Definitions
               </h2>
-              <div className={reverseMode ? "space-y-2 md:space-y-3" : "grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3"}>
-                {reverseMode ? (
-                  // Reverse mode: show definitions as buttons (but they should look like definitions - black/cyan, full width)
-                  shuffledDefinitions.map((item, index) => {
-                    const matched = isDefinitionMatched(index)
-                    const selected = selectedDefinition === index
-                    return (
-                      <button
-                        key={index}
-                        onClick={(e) => matched ? handleMatchedItemClick('definition', index, e) : handleDefinitionClick(index)}
-                        disabled={false}
-                        className={`w-full py-2.5 px-4 rounded-lg border text-left transition-all duration-200 relative ${
-                          matched
-                            ? 'bg-gradient-to-r from-green-400 via-green-300 to-green-400 border-green-300 text-black cursor-pointer opacity-80 shadow-[0_0_20px_rgba(0,255,0,0.8),0_0_10px_rgba(0,255,0,0.6)]'
-                            : selected
-                            ? 'bg-black/70 border border-neon-cyan text-white shadow-[0_0_15px_rgba(0,255,255,0.6)]'
-                            : 'bg-black/50 border border-neon-cyan/50 text-gray-200 hover:bg-black/70 hover:border-neon-cyan active:bg-black/80'
-                        }`}
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <span className="text-xs md:text-sm leading-relaxed flex-1">{item.definition}</span>
-                          {matched && <CheckCircle2 size={16} className="text-black flex-shrink-0 mt-0.5" />}
-                        </div>
-                      </button>
-                    )
-                  })
-                ) : (
-                  // Normal mode: show terms as buttons
-                  shuffledTerms.map((item, index) => {
-                    const matched = isTermMatched(index)
-                    const selected = selectedTerm === index
-                    return (
-                      <button
-                        key={index}
-                        onClick={(e) => matched ? handleMatchedItemClick('term', index, e) : handleTermClick(index)}
-                        disabled={false}
-                        className={`w-full py-2 px-4 rounded-xl text-center transition-all duration-200 font-semibold text-sm md:text-base relative ${
-                          matched
-                            ? 'bg-gradient-to-r from-neon-cyan via-neon-cyan/80 to-neon-cyan/60 border border-neon-cyan text-black cursor-pointer opacity-80 shadow-[0_0_20px_rgba(0,255,255,0.8),0_0_10px_rgba(0,255,255,0.6)]'
-                            : selected
-                            ? 'bg-gradient-to-r from-neon-magenta via-neon-magenta to-neon-magenta/90 border border-neon-magenta text-white shadow-[0_0_30px_rgba(255,0,255,1),0_0_15px_rgba(255,0,255,0.8),inset_0_0_20px_rgba(255,0,255,0.3)]'
-                            : 'bg-gradient-to-r from-neon-magenta/90 via-neon-magenta/70 to-neon-magenta/50 border border-neon-magenta text-white hover:from-neon-magenta hover:via-neon-magenta/95 hover:to-neon-magenta/80 hover:shadow-[0_0_25px_rgba(255,0,255,0.9),0_0_10px_rgba(255,0,255,0.6)] active:from-neon-magenta active:to-neon-magenta active:shadow-[0_0_35px_rgba(255,0,255,1),0_0_15px_rgba(255,0,255,0.8)]'
-                        }`}
-                      >
-                        <div className="flex items-center justify-center gap-2">
-                          <span>{item.term}</span>
-                          {matched && <CheckCircle2 size={16} className="text-black flex-shrink-0" />}
-                        </div>
-                      </button>
-                    )
-                  })
-                )}
+              <div className="space-y-2 md:space-y-3">
+                {shuffledDefinitions.map((item, index) => {
+                  const matched = isDefinitionMatched(index)
+                  const selected = selectedDefinition === index
+                  return (
+                    <button
+                      key={index}
+                      onClick={(e) => matched ? handleMatchedItemClick('definition', index, e) : handleDefinitionClick(index)}
+                      disabled={false}
+                      className={`w-full py-2.5 px-4 rounded-lg border text-left transition-all duration-200 relative ${
+                        matched
+                          ? 'bg-gradient-to-r from-green-400 via-green-300 to-green-400 border-green-300 text-black cursor-pointer opacity-80 shadow-[0_0_20px_rgba(0,255,0,0.8),0_0_10px_rgba(0,255,0,0.6)]'
+                          : selected
+                          ? 'bg-black/70 border border-neon-cyan text-white shadow-[0_0_15px_rgba(0,255,255,0.6)]'
+                          : 'bg-black/50 border border-neon-cyan/50 text-gray-200 hover:bg-black/70 hover:border-neon-cyan active:bg-black/80'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="text-xs md:text-sm leading-relaxed flex-1">{item.definition}</span>
+                        {matched && <CheckCircle2 size={16} className="text-black flex-shrink-0 mt-0.5" />}
+                      </div>
+                    </button>
+                  )
+                })}
               </div>
             </div>
           </div>
         </main>
       )}
 
-      {/* Popup for selecting definition or term */}
-      {((!reverseMode && selectedTerm !== null && !isTermMatched(selectedTerm)) || 
-        (reverseMode && selectedDefinition !== null && !isDefinitionMatched(selectedDefinition))) && (
+      {/* Popup for selecting term */}
+      {selectedDefinition !== null && !isDefinitionMatched(selectedDefinition) && (
         <div 
           className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          onClick={() => {
-            if (reverseMode) setSelectedDefinition(null)
-            else setSelectedTerm(null)
-          }}
+          onClick={() => setSelectedDefinition(null)}
         >
           <div 
             className="bg-black/90 backdrop-blur-md rounded-none md:rounded-3xl border border-neon-cyan shadow-[0_0_30px_rgba(0,255,255,0.5)] w-full h-full md:max-w-2xl md:w-auto md:max-h-[80vh] md:h-auto flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between p-4 md:p-6 pb-4 sticky top-0 bg-black/90 backdrop-blur-md z-10 border-b border-neon-cyan/30">
+            <div className="flex items-center justify-between p-4 md:p-6 pb-4 sticky top-0 bg-black/90 backdrop-blur-md z-10 border-b rounded-t-3xl border-neon-cyan/30">
               <h3 className="text-lg md:text-xl font-bold text-neon-magenta">
-                {reverseMode 
-                  ? <>Select term for: <span className="text-white">{shuffledDefinitions[selectedDefinition]?.definition}</span></>
-                  : <>Select definition for: <span className="text-white">{shuffledTerms[selectedTerm]?.term}</span></>
-                }
+                Select term for: <span className="text-white">{shuffledDefinitions[selectedDefinition]?.definition}</span>
               </h3>
               <button
-                onClick={() => {
-                  if (reverseMode) setSelectedDefinition(null)
-                  else setSelectedTerm(null)
-                }}
+                onClick={() => setSelectedDefinition(null)}
                 className="text-gray-400 hover:text-white transition-colors p-1"
               >
                 <X size={24} />
@@ -613,9 +478,7 @@ function VocabMinus1() {
             </div>
             <div className="overflow-y-auto flex-1 px-4 md:px-6 pb-4 md:pb-6">
               <div className="space-y-2">
-              {reverseMode ? (
-                // Reverse mode: show terms in popup (definition style - black/cyan)
-                shuffledTerms.map((item, index) => {
+                {shuffledTerms.map((item, index) => {
                   const matched = isTermMatched(index)
                   if (matched) return null
                   const isWrong = wrongDefIndex === index
@@ -641,37 +504,7 @@ function VocabMinus1() {
                       </div>
                     </button>
                   )
-                })
-              ) : (
-                // Normal mode: show definitions in popup
-                shuffledDefinitions.map((item, index) => {
-                  const matched = isDefinitionMatched(index)
-                  if (matched) return null
-                  const isWrong = wrongDefIndex === index
-                  const isCorrect = correctDefIndex === index
-                  return (
-                    <button
-                      key={index}
-                      onClick={() => {
-                        checkMatch(selectedTerm, index)
-                      }}
-                      disabled={isCorrect}
-                      className={`w-full py-3 px-4 rounded-lg border text-left transition-all duration-500 ${
-                        isCorrect
-                          ? 'bg-gradient-to-r from-green-400 via-green-300 to-green-400 border-green-300 text-black shadow-[0_0_30px_rgba(0,255,0,1),0_0_15px_rgba(0,255,0,0.8)]'
-                          : isWrong
-                          ? 'bg-gradient-to-r from-red-500 via-red-400 to-red-500 border-red-400 text-white shadow-[0_0_30px_rgba(255,0,0,1),0_0_15px_rgba(255,0,0,0.8)] animate-pulse'
-                          : 'bg-black/50 border-neon-cyan/50 text-gray-200 hover:bg-neon-cyan/20 hover:border-neon-cyan active:bg-neon-cyan/30'
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <span className="text-sm leading-relaxed flex-1">{item.definition}</span>
-                        {isCorrect && <CheckCircle2 size={18} className="text-black flex-shrink-0 mt-0.5" />}
-                      </div>
-                    </button>
-                  )
-                })
-              )}
+                })}
               </div>
             </div>
           </div>
