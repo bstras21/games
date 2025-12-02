@@ -10,6 +10,14 @@ function Home() {
       icon: BookOpen,
       description: 'Test and expand your vocabulary',
       color: 'magenta'
+    },
+    { 
+      id: 'vocab-unit-4', 
+      name: 'Vocab Unit 4', 
+      path: '/vocab-unit-4',
+      icon: BookOpen,
+      description: 'Political geography vocabulary',
+      color: 'cyan'
     }
   ]
 
@@ -36,7 +44,11 @@ function Home() {
               to={game.path} 
               className="no-underline text-inherit transition-all duration-300 hover:-translate-y-2 hover:scale-105"
             >
-              <div className="relative bg-black/40 backdrop-blur-md rounded-3xl p-8 border border-neon-magenta transition-all duration-300 cursor-pointer overflow-hidden group shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:shadow-[0_0_25px_rgba(255,0,255,0.2)]">
+              <div className={`relative bg-black/40 backdrop-blur-md rounded-3xl p-8 border transition-all duration-300 cursor-pointer overflow-hidden group shadow-[0_0_20px_rgba(0,0,0,0.5)] ${
+                isMagenta 
+                  ? 'border-neon-magenta hover:shadow-[0_0_25px_rgba(255,0,255,0.2)]' 
+                  : 'border-neon-cyan hover:shadow-[0_0_25px_rgba(0,255,255,0.2)]'
+              }`}>
                 {/* Icon */}
                 <div className={`w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 ${
                   isMagenta 
