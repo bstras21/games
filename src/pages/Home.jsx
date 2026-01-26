@@ -18,6 +18,14 @@ function Home() {
       icon: BookOpen,
       description: 'Political geography vocabulary',
       color: 'cyan'
+    },
+    { 
+      id: 'vocab-unit-5', 
+      name: 'Vocab Unit 5', 
+      path: '/vocab-unit-5',
+      icon: BookOpen,
+      description: 'Agriculture and food systems vocabulary',
+      color: 'purple'
     }
   ]
 
@@ -38,6 +46,8 @@ function Home() {
         {games.map((game) => {
           const IconComponent = game.icon
           const isMagenta = game.color === 'magenta'
+          const isOrange = game.color === 'orange'
+          const isPurple = game.color === 'purple'
           return (
             <Link 
               key={game.id} 
@@ -47,12 +57,20 @@ function Home() {
               <div className={`relative bg-black/40 backdrop-blur-md rounded-3xl p-8 border transition-all duration-300 cursor-pointer overflow-hidden group shadow-[0_0_20px_rgba(0,0,0,0.5)] ${
                 isMagenta 
                   ? 'border-neon-magenta hover:shadow-[0_0_25px_rgba(255,0,255,0.2)]' 
+                  : isOrange
+                  ? 'border-neon-orange hover:shadow-[0_0_25px_rgba(255,102,0,0.2)]'
+                  : isPurple
+                  ? 'border-neon-purple hover:shadow-[0_0_25px_rgba(191,0,255,0.2)]'
                   : 'border-neon-cyan hover:shadow-[0_0_25px_rgba(0,255,255,0.2)]'
               }`}>
                 {/* Icon */}
                 <div className={`w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 ${
                   isMagenta 
                     ? 'bg-neon-magenta/20 text-neon-magenta shadow-[0_0_8px_rgba(255,0,255,0.3)]' 
+                    : isOrange
+                    ? 'bg-neon-orange/20 text-neon-orange shadow-[0_0_8px_rgba(255,102,0,0.3)]'
+                    : isPurple
+                    ? 'bg-neon-purple/20 text-neon-purple shadow-[0_0_8px_rgba(191,0,255,0.3)]'
                     : 'bg-neon-cyan/20 text-neon-cyan shadow-[0_0_8px_rgba(0,255,255,0.3)]'
                 }`}>
                   <IconComponent size={48} strokeWidth={1.5} />
@@ -60,7 +78,7 @@ function Home() {
                 
                 {/* Title */}
                 <h2 className={`text-2xl text-center mb-3 font-semibold ${
-                  isMagenta ? 'text-neon-magenta' : 'text-neon-cyan'
+                  isMagenta ? 'text-neon-magenta' : isOrange ? 'text-neon-orange' : isPurple ? 'text-neon-purple' : 'text-neon-cyan'
                 }`}>
                   {game.name}
                 </h2>
@@ -72,7 +90,7 @@ function Home() {
                 
                 {/* Arrow/Sparkle */}
                 <div className={`flex justify-center transition-all duration-300 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 ${
-                  isMagenta ? 'text-neon-magenta' : 'text-neon-cyan'
+                  isMagenta ? 'text-neon-magenta' : isOrange ? 'text-neon-orange' : isPurple ? 'text-neon-purple' : 'text-neon-cyan'
                 }`}>
                   <Sparkles size={20} />
                 </div>
