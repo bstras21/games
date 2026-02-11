@@ -6,6 +6,9 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        'open-sans': ['Open Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+      },
       colors: {
         neon: {
           magenta: '#ff00ff',

@@ -414,14 +414,14 @@ function VocabMinus1() {
       ) : (
         <main className="max-w-7xl mx-auto">
           <div className="mb-6 text-center">
-            <p className="text-gray-300">
+            <p className="text-gray-300 font-open-sans text-lg">
               Click a definition and then its matching term
             </p>
           </div>
           
           <div className="max-w-4xl mx-auto">
             {/* Definitions Column */}
-            <div className="bg-black/40 backdrop-blur-md rounded-3xl p-4 md:p-6 border border-neon-magenta shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+            <div className="bg-black/60 backdrop-blur-md rounded-3xl p-4 md:p-6 border border-neon-magenta shadow-[0_0_20px_rgba(0,0,0,0.5)]">
               <h2 className="text-xl font-bold text-neon-magenta mb-4 text-center">
                 Definitions
               </h2>
@@ -438,12 +438,12 @@ function VocabMinus1() {
                         matched
                           ? 'bg-gradient-to-r from-green-400 via-green-300 to-green-400 border-green-300 text-black cursor-pointer opacity-80 shadow-[0_0_20px_rgba(0,255,0,0.8),0_0_10px_rgba(0,255,0,0.6)]'
                           : selected
-                          ? 'bg-black/70 border border-neon-cyan text-white shadow-[0_0_15px_rgba(0,255,255,0.6)]'
-                          : 'bg-black/50 border border-neon-cyan/50 text-gray-200 hover:bg-black/70 hover:border-neon-cyan active:bg-black/80'
+                          ? 'bg-black/80 border border-neon-cyan text-white shadow-[0_0_15px_rgba(0,255,255,0.6)]'
+                          : 'bg-black/65 border border-neon-cyan/50 text-gray-200 hover:bg-black/75 hover:border-neon-cyan active:bg-black/85'
                       }`}
                     >
                       <div className="flex items-start justify-between gap-2">
-                        <span className="text-xs md:text-sm leading-relaxed flex-1">{item.definition}</span>
+                        <span className="text-xs md:text-sm leading-relaxed flex-1 font-open-sans">{item.definition}</span>
                         {matched && <CheckCircle2 size={16} className="text-black flex-shrink-0 mt-0.5" />}
                       </div>
                     </button>
@@ -467,7 +467,7 @@ function VocabMinus1() {
           >
             <div className="flex items-center justify-between p-4 md:p-6 pb-4 sticky top-0 bg-black/90 backdrop-blur-md z-10 border-b rounded-t-3xl border-neon-cyan/30">
               <h3 className="text-lg md:text-xl font-bold text-neon-magenta">
-                Select term for: <span className="text-white">{shuffledDefinitions[selectedDefinition]?.definition}</span>
+                Select term for: <span className="text-white font-open-sans">{shuffledDefinitions[selectedDefinition]?.definition}</span>
               </h3>
               <button
                 onClick={() => setSelectedDefinition(null)}
@@ -495,11 +495,11 @@ function VocabMinus1() {
                           ? 'bg-gradient-to-r from-green-400 via-green-300 to-green-400 border-green-300 text-black shadow-[0_0_30px_rgba(0,255,0,1),0_0_15px_rgba(0,255,0,0.8)]'
                           : isWrong
                           ? 'bg-gradient-to-r from-red-500 via-red-400 to-red-500 border-red-400 text-white shadow-[0_0_30px_rgba(255,0,0,1),0_0_15px_rgba(255,0,0,0.8)] animate-pulse'
-                          : 'bg-black/50 border-neon-cyan/50 text-gray-200 hover:bg-black/70 hover:border-neon-cyan active:bg-black/80'
+                          : 'bg-black/65 border-neon-cyan/50 text-gray-200 hover:bg-black/75 hover:border-neon-cyan active:bg-black/85'
                       }`}
                     >
                       <div className="flex items-start justify-between gap-2">
-                        <span className="text-sm leading-relaxed flex-1">{item.term}</span>
+                        <span className="text-sm leading-relaxed flex-1 font-open-sans">{item.term}</span>
                         {isCorrect && <CheckCircle2 size={18} className="text-black flex-shrink-0 mt-0.5" />}
                       </div>
                     </button>
@@ -522,7 +522,7 @@ function VocabMinus1() {
               <div className="text-neon-magenta font-bold text-lg mb-2">
                 {tooltipData.type === 'term' ? 'Term:' : 'Definition:'}
               </div>
-              <div className="text-white text-base md:text-lg">
+              <div className="text-white text-base md:text-lg font-open-sans">
                 {tooltipData.text}
               </div>
             </div>

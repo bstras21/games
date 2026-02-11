@@ -26,6 +26,14 @@ function Home() {
       icon: BookOpen,
       description: 'Agriculture and food systems vocabulary',
       color: 'purple'
+    },
+    { 
+      id: 'vocab-unit-6', 
+      name: 'Vocab Unit 6', 
+      path: '/vocab-unit-6',
+      icon: BookOpen,
+      description: 'Urbanization and cities vocabulary',
+      color: 'orange'
     }
   ]
 
@@ -84,7 +92,7 @@ function Home() {
                 </h2>
                 
                 {/* Description */}
-                <p className="text-gray-300 text-center text-sm mb-4 leading-relaxed">
+                <p className="text-gray-300 text-center text-base mb-4 leading-relaxed font-open-sans">
                   {game.description}
                 </p>
                 
