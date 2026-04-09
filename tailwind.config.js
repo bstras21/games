@@ -13,6 +13,7 @@ export default {
         neon: {
           magenta: '#ff00ff',
           cyan: '#00ffff',
+          blue: '#4499ff',
           orange: '#ff6600',
           purple: '#bf00ff',
           'magenta-dark': '#cc00cc',

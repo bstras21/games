@@ -34,6 +34,14 @@ function Home() {
       icon: BookOpen,
       description: 'Urbanization and cities vocabulary',
       color: 'orange'
+    },
+    { 
+      id: 'vocab-unit-7', 
+      name: 'Vocab Unit 7', 
+      path: '/vocab-unit-7',
+      icon: BookOpen,
+      description: 'Industrialization and economic geography vocabulary',
+      color: 'blue'
     }
   ]
 
@@ -56,6 +64,7 @@ function Home() {
           const isMagenta = game.color === 'magenta'
           const isOrange = game.color === 'orange'
           const isPurple = game.color === 'purple'
+          const isBlue = game.color === 'blue'
           return (
             <Link 
               key={game.id} 
@@ -69,6 +78,8 @@ function Home() {
                   ? 'border-neon-orange hover:shadow-[0_0_25px_rgba(255,102,0,0.2)]'
                   : isPurple
                   ? 'border-neon-purple hover:shadow-[0_0_25px_rgba(191,0,255,0.2)]'
+                  : isBlue
+                  ? 'border-neon-blue hover:shadow-[0_0_25px_rgba(68,153,255,0.25)]'
                   : 'border-neon-cyan hover:shadow-[0_0_25px_rgba(0,255,255,0.2)]'
               }`}>
                 {/* Icon */}
@@ -79,6 +90,8 @@ function Home() {
                     ? 'bg-neon-orange/20 text-neon-orange shadow-[0_0_8px_rgba(255,102,0,0.3)]'
                     : isPurple
                     ? 'bg-neon-purple/20 text-neon-purple shadow-[0_0_8px_rgba(191,0,255,0.3)]'
+                    : isBlue
+                    ? 'bg-neon-blue/20 text-neon-blue shadow-[0_0_8px_rgba(68,153,255,0.35)]'
                     : 'bg-neon-cyan/20 text-neon-cyan shadow-[0_0_8px_rgba(0,255,255,0.3)]'
                 }`}>
                   <IconComponent size={48} strokeWidth={1.5} />
@@ -86,7 +99,7 @@ function Home() {
                 
                 {/* Title */}
                 <h2 className={`text-2xl text-center mb-3 font-semibold ${
-                  isMagenta ? 'text-neon-magenta' : isOrange ? 'text-neon-orange' : isPurple ? 'text-neon-purple' : 'text-neon-cyan'
+                  isMagenta ? 'text-neon-magenta' : isOrange ? 'text-neon-orange' : isPurple ? 'text-neon-purple' : isBlue ? 'text-neon-blue' : 'text-neon-cyan'
                 }`}>
                   {game.name}
                 </h2>
@@ -98,7 +111,7 @@ function Home() {
                 
                 {/* Arrow/Sparkle */}
                 <div className={`flex justify-center transition-all duration-300 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 ${
-                  isMagenta ? 'text-neon-magenta' : isOrange ? 'text-neon-orange' : isPurple ? 'text-neon-purple' : 'text-neon-cyan'
+                  isMagenta ? 'text-neon-magenta' : isOrange ? 'text-neon-orange' : isPurple ? 'text-neon-purple' : isBlue ? 'text-neon-blue' : 'text-neon-cyan'
                 }`}>
                   <Sparkles size={20} />
                 </div>
